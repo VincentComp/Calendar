@@ -15,7 +15,7 @@
 
 ## Introduction
 
-**My Calendar** is a user-friendly web application designed to help individuals efficiently manage their tasks and schedules. By integrating a clear task list with an interactive calendar view, the application ensures that users can keep track of their daily to-dos and upcoming deadlines seamlessly. Leveraging modern web technologies, **Calendar Task Manager** offers a responsive and intuitive user experience, accessible across various devices.
+**Calendar Task Manager** is a user-friendly web application designed to help individuals efficiently manage their tasks and schedules. By integrating a clear task list with an interactive calendar view, the application ensures that users can keep track of their daily to-dos and upcoming deadlines seamlessly. Leveraging modern web technologies, **Calendar Task Manager** offers a responsive and intuitive user experience, accessible across various devices.
 
 ## Features
 
