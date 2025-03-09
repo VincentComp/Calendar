@@ -17,7 +17,14 @@
     <!-- Add Task Form -->
     <form id="task-form">
       <input type="text" id="task-title" placeholder="Task Title" required>
-      <input type="date" id="task-date" required>
+      
+      <div class="date-fields">
+        <label for="task-start-date">Start Date:</label>
+        <input type="date" id="task-start-date" required>
+        
+        <label for="task-end-date">End Date:</label>
+        <input type="date" id="task-end-date" required>
+      </div>
 
       <div class="time-fields">
         <label>

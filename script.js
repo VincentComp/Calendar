@@ -3,7 +3,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const taskForm = document.getElementById('task-form');
   const taskTitleInput = document.getElementById('task-title');
-  const taskDateInput = document.getElementById('task-date');
+  const taskStartDateInput = document.getElementById('task-start-date');
+  const taskEndDateInput = document.getElementById('task-end-date');
   const taskStartTimeInput = document.getElementById('task-start-time');
   const taskEndTimeInput = document.getElementById('task-end-time');
   const allDayCheckbox = document.getElementById('all-day');
@@ -60,8 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
         allDay: task.allDay
       })),
       dateClick: function(info) {
-        // Pre-fill the date when a date is clicked
-        taskDateInput.value = info.dateStr;
+        // Pre-fill the start date when a date is clicked
+        taskStartDateInput.value = info.dateStr;
+        // If end date is empty, set it to start date
+        if (!taskEndDateInput.value) {
+          taskEndDateInput.value = info.dateStr;
+        }
         taskTitleInput.focus();
       }
     });
@@ -100,16 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Function to format the event time for display
   function formatEventTime(task) {
     if (task.allDay) {
-      return `${formatDate(task.start)} (All Day)`;
+      return `${formatDate(task.start)} to ${formatDate(task.end)} (All Day)`;
     } else {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const optionsDate = { year: 'numeric', month: 'short', day: 'numeric' };
       const optionsTime = { hour: '2-digit', minute: '2-digit' };
       const startDate = new Date(task.start);
       const endDate = new Date(task.end);
-      const formattedDate = startDate.toLocaleDateString(undefined, options);
+      const formattedStartDate = startDate.toLocaleDateString(undefined, optionsDate);
+      const formattedEndDate = endDate.toLocaleDateString(undefined, optionsDate);
       const formattedStartTime = startDate.toLocaleTimeString([], optionsTime);
       const formattedEndTime = endDate.toLocaleTimeString([], optionsTime);
-      return `${formattedDate} ${formattedStartTime} - ${formattedEndTime}`;
+
+      if (formattedStartDate === formattedEndDate) {
+        return `${formattedStartDate} ${formattedStartTime} - ${formattedEndTime}`;
+      } else {
+        return `${formattedStartDate} ${formattedStartTime} to ${formattedEndDate} ${formattedEndTime}`;
+      }
     }
   }
 
@@ -124,43 +135,56 @@ document.addEventListener('DOMContentLoaded', () => {
   taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const title = taskTitleInput.value.trim();
-    const date = taskDateInput.value;
+    const startDate = taskStartDateInput.value;
+    const endDate = taskEndDateInput.value;
     const allDay = allDayCheckbox.checked;
     
-    if (title && date) {
-      let start, end;
-      if (allDay) {
-        start = date;
-        // Use FullCalendar's all-day setting correctly without altering the end date
-        end = start; // Just use the same day for all-day events
-      } else {
-        const startTime = taskStartTimeInput.value;
-        const endTime = taskEndTimeInput.value;
+    // Basic validation
+    if (!title || !startDate || !endDate) {
+      alert('Please fill in all required fields.');
+      return;
+    }
 
-        if (!startTime || !endTime) {
-          alert('Please fill in both start time and end time.');
-          return;
-        }
+    // Ensure end date is not before start date
+    if (new Date(endDate) < new Date(startDate)) {
+      alert('End date cannot be before start date.');
+      return;
+    }
 
-        // Ensure end time is after start time
-        if (endTime <= startTime) {
-          alert('End time must be after start time.');
-          return;
-        }
+    let start, end;
+    if (allDay) {
+      // For all-day events spanning multiple days, FullCalendar expects end date to be non-inclusive
+      start = startDate;
+      // Increment end date by one day for FullCalendar
+      const endDateObj = new Date(endDate);
+      endDateObj.setDate(endDateObj.getDate() + 1);
+      end = endDateObj.toISOString().split('T')[0];
+    } else {
+      const startTime = taskStartTimeInput.value;
+      const endTime = taskEndTimeInput.value;
 
-        start = `${date}T${startTime}`;
-        end = `${date}T${endTime}`;
+      if (!startTime || !endTime) {
+        alert('Please fill in both start time and end time.');
+        return;
       }
 
-      tasks.push({ title, start, end, allDay });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      taskForm.reset();
-      toggleTimeInputs();
-      renderTasks();
-      calendar.gotoDate(date); // Optional: Navigate to the added task's date
-    } else {
-      alert('Please fill in all required fields.');
+      // For multi-day timed events, concatenate dates and times
+      start = `${startDate}T${startTime}`;
+      end = `${endDate}T${endTime}`;
+
+      // Ensure end datetime is after start datetime
+      if (new Date(end) <= new Date(start)) {
+        alert('End time must be after start time.');
+        return;
+      }
     }
+
+    tasks.push({ title, start, end, allDay });
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    taskForm.reset();
+    toggleTimeInputs();
+    renderTasks();
+    calendar.gotoDate(startDate); // Navigate to the start date of the added task
   });
 
   // Function to delete a task

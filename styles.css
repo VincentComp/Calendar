@@ -1,128 +1,145 @@
 /* styles.css */
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 20px;
-  }
-  
-  .container {
-    max-width: 900px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  h1 {
-    text-align: center;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  form input[type="text"],
-  form input[type="date"],
-  form input[type="time"] {
-    padding: 10px;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.date-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.date-fields label {
+  margin-bottom: 2px;
+  font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="time"] {
+  padding: 10px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.time-fields {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#time-inputs input[type="time"] {
+  width: auto;
+}
+
+#time-inputs span {
+  font-size: 16px;
+}
+
+form button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  width: 150px;
+  align-self: flex-end;
+}
+
+form button:hover {
+  background-color: #218838;
+}
+
+#task-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+#task-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e9ecef;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+}
+
+#task-list li span {
+  flex: 1;
+}
+
+#task-list li button {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+#task-list li button:hover {
+  background-color: #c82333;
+}
+
+#calendar {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
   .time-fields {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
+
   #time-inputs {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  #time-inputs input[type="time"] {
-    width: auto;
-  }
-  
-  #time-inputs span {
-    font-size: 16px;
-  }
-  
+
   form button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 3px;
-    width: 150px;
-    align-self: flex-end;
+    width: 100%;
   }
-  
-  form button:hover {
-    background-color: #218838;
+
+  .date-fields {
+    flex-direction: column;
   }
-  
-  #task-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 20px;
-  }
-  
-  #task-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e9ecef;
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 3px;
-  }
-  
-  #task-list li span {
-    flex: 1;
-  }
-  
-  #task-list li button {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  
-  #task-list li button:hover {
-    background-color: #c82333;
-  }
-  
-  #calendar {
-    max-width: 100%;
-    margin: 0 auto;
-  }
-  
-  /* Responsive Adjustments */
-  @media (max-width: 600px) {
-    .time-fields {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    #time-inputs {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    form button {
-      width: 100%;
-    }
-  }
+}
