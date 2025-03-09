@@ -30,7 +30,7 @@
 
 Experience the application firsthand by visiting the live demo:
 
-🔗 [Calendar Task Manager Live Demo](https://vincentcomp.github.io/Calendar/)
+🔗 [Calendar Task Manager Live Demo](https://vincentcomp.github.io/Calendar-Task-Manager/)
 
 ## Technologies Used
 
