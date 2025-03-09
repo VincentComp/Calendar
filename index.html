@@ -35,13 +35,41 @@
           <input type="time" id="task-end-time" required>
         </div>
       </div>
+      
+      <!-- New: Color Group Selection -->
+      <div class="color-group">
+        <label for="task-color">Group:</label>
+        <select id="task-color">
+          <option value="">No Group</option>
+          <option value="#ff4d4d">Red</option>
+          <option value="#4da6ff">Blue</option>
+          <option value="#4dff88">Green</option>
+          <option value="#ffbb4d">Orange</option>
+          <option value="#d24dff">Purple</option>
+        </select>
+      </div>
 
       <button type="submit">Add Task</button>
     </form>
     
-    <!-- Enhanced Task List -->
+    <!-- Task List with Filtering -->
     <div class="task-container">
       <h2>Task List</h2>
+      
+      <!-- New: Filter Options -->
+      <div class="filter-container">
+        <label for="filter-color">Filter by Group:</label>
+        <select id="filter-color">
+          <option value="all">All Groups</option>
+          <option value="">No Group</option>
+          <option value="#ff4d4d">Red</option>
+          <option value="#4da6ff">Blue</option>
+          <option value="#4dff88">Green</option>
+          <option value="#ffbb4d">Orange</option>
+          <option value="#d24dff">Purple</option>
+        </select>
+      </div>
+      
       <ul id="task-list"></ul>
     </div>
     

@@ -1,5 +1,3 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', () => {
   const taskForm = document.getElementById('task-form');
   const taskTitleInput = document.getElementById('task-title');
@@ -10,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const allDayCheckbox = document.getElementById('all-day');
   const taskList = document.getElementById('task-list');
   const timeInputsDiv = document.getElementById('time-inputs');
+  const taskColorInput = document.getElementById('task-color'); // New: Color Group Input
+  const filterColorInput = document.getElementById('filter-color'); // New: Filter Input
   let tasks = [];
   let calendar;
 
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initialView: 'dayGridMonth',
       selectable: true,
       editable: false,
-      eventColor: '#007bff',
+      eventColor: 'gray', // Default event color for "No Group"
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -59,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         title: task.title,
         start: task.start,
         end: task.end,
-        allDay: task.allDay
+        allDay: task.allDay,
+        color: task.color || 'gray' // Use assigned color or gray
       })),
       dateClick: function(info) {
         // Pre-fill the start date when a date is clicked
@@ -84,20 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
           title: task.title,
           start: task.start,
           end: task.end,
-          allDay: task.allDay
+          allDay: task.allDay,
+          color: task.color || 'gray' // Use assigned color or gray
         });
       });
     }
   }
 
-  // Function to render tasks in the task list
+  // Function to render tasks in the task list based on filter
   function renderTasks() {
     taskList.innerHTML = '';
-    tasks.forEach((task) => {
+    const filterColor = filterColorInput.value;
+
+    // Filter tasks based on selected color
+    const filteredTasks = tasks.filter(task => {
+      if (filterColor === 'all') return true;
+      if (filterColor === '') return task.color === undefined || task.color === '';
+      return task.color === filterColor;
+    });
+
+    filteredTasks.forEach((task) => {
       const li = document.createElement('li');
+      
+      // Dynamically set the border-left color
+      li.style.borderLeftColor = task.color || 'gray'; // Use task color or gray
 
       li.innerHTML = `
         <div class="task-info">
+          <span class="task-color-dot" style="background-color: ${task.color || 'gray'};"></span>
           <span class="task-title">${task.title}</span>
           <span class="task-time">${formatEventTime(task)}</span>
         </div>
@@ -157,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startDate = taskStartDateInput.value;
     const endDate = taskEndDateInput.value;
     const allDay = allDayCheckbox.checked;
+    const color = taskColorInput.value; // New: Get selected color
 
     // Basic validation
     if (!title || !startDate || !endDate) {
@@ -210,7 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
           title,
           start,
           end,
-          allDay
+          allDay,
+          color: color || '' // Assign color or empty string for "No Group"
         };
         // Remove the editing state
         taskForm.removeAttribute('data-editing-id');
@@ -218,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       // Create a unique ID for the new task
       const taskId = Date.now().toString();
-      tasks.push({ id: taskId, title, start, end, allDay });
+      tasks.push({ id: taskId, title, start, end, allDay, color: color || '' });
     }
 
     // Save to LocalStorage
@@ -278,6 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
             taskEndTimeInput.value = endTime;
           }
 
+          // Set the color group
+          taskColorInput.value = task.color || '';
+
           // Set the editing state with the task ID
           taskForm.setAttribute('data-editing-id', taskId);
           
@@ -286,6 +306,37 @@ document.addEventListener('DOMContentLoaded', () => {
             top: taskForm.offsetTop,
             behavior: 'smooth'
           });
+        }
+      }
+    }
+  });
+
+  // Function to handle filtering
+  filterColorInput.addEventListener('change', () => {
+    renderTasks();
+  });
+
+  // Function to navigate to event on calendar when a task is clicked
+  taskList.addEventListener('click', (e) => {
+    // Exclude clicks on Edit and Delete buttons
+    if (!e.target.closest('.edit-btn') && !e.target.closest('.delete-btn')) {
+      const taskItem = e.target.closest('li');
+      if (taskItem) {
+        const taskId = taskItem.querySelector('.edit-btn').getAttribute('data-id');
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          // Navigate the calendar to the task's start date
+          calendar.gotoDate(task.start);
+
+          // Optionally, highlight the event
+          const fcEvent = calendar.getEventById(task.id);
+          if (fcEvent) {
+            const originalColor = fcEvent.backgroundColor;
+            fcEvent.setProp('backgroundColor', 'yellow'); // Highlight color
+            setTimeout(() => {
+              fcEvent.setProp('backgroundColor', originalColor); // Revert to original color
+            }, 2000); // Highlight for 2 seconds
+          }
         }
       }
     }
