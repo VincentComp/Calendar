@@ -1,0 +1,49 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Calendar</title>
+  
+  <!-- FullCalendar CSS -->
+  <link href='https://unpkg.com/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="images/icon.png">
+</head>
+<body>
+  <div class="container">
+    <h1>My Calendar</h1>
+    
+    <!-- Add Task Form -->
+    <form id="task-form">
+      <input type="text" id="task-title" placeholder="Task Title" required>
+      <input type="date" id="task-date" required>
+
+      <div class="time-fields">
+        <label>
+          <input type="checkbox" id="all-day"> All Day Event
+        </label>
+        <div id="time-inputs">
+          <input type="time" id="task-start-time" required>
+          <span>to</span>
+          <input type="time" id="task-end-time" required>
+        </div>
+      </div>
+
+      <button type="submit">Add Task</button>
+    </form>
+    
+    <!-- Task List -->
+    <ul id="task-list"></ul>
+    
+    <!-- Calendar -->
+    <div id='calendar'></div>
+  </div>
+  
+  <!-- FullCalendar JS -->
+  <script src='https://unpkg.com/fullcalendar@6.1.8/index.global.min.js'></script>
+  
+  <!-- Your Custom JS -->
+  <script src="script.js"></script>
+</body>
+</html>
