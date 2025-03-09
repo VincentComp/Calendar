@@ -16,8 +16,9 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+h1, h2 {
   text-align: center;
+  color: #333;
 }
 
 form {
@@ -29,8 +30,8 @@ form {
 
 .date-fields {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .date-fields label {
@@ -79,43 +80,88 @@ form button {
   border-radius: 3px;
   width: 150px;
   align-self: flex-end;
+  transition: background-color 0.3s ease;
 }
 
 form button:hover {
   background-color: #218838;
 }
 
+.task-container {
+  margin-bottom: 20px;
+}
+
 #task-list {
   list-style: none;
   padding: 0;
-  margin-bottom: 20px;
+  margin: 0;
 }
 
 #task-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #e9ecef;
-  padding: 10px;
-  margin-bottom: 5px;
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-left: 5px solid #007bff;
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
-#task-list li span {
-  flex: 1;
+#task-list li:hover {
+  background: #f1f1f1;
+}
+
+#task-list li .task-info {
+  display: flex;
+  flex-direction: column;
+}
+
+#task-list li .task-info .task-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+#task-list li .task-info .task-time {
+  font-size: 14px;
+  color: #666;
+}
+
+#task-list li .task-actions {
+  display: flex;
+  gap: 10px;
 }
 
 #task-list li button {
-  background-color: #dc3545;
-  color: #fff;
+  background-color: transparent;
+  color: #dc3545;
   border: none;
-  padding: 5px 10px;
   cursor: pointer;
-  border-radius: 3px;
+  font-size: 16px;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
 }
 
 #task-list li button:hover {
-  background-color: #c82333;
+  color: #a71d2a;
+}
+
+/* Edit Button Styling */
+#task-list li .edit-btn {
+  color: #007bff;
+}
+
+#task-list li .edit-btn:hover {
+  color: #0056b3;
+}
+
+/* SVG Icons Styling */
+#task-list li button svg {
+  width: 20px;
+  height: 20px;
 }
 
 #calendar {

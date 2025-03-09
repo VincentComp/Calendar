@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         right: 'dayGridMonth,timeGridWeek,timeGridDay'
       },
       events: tasks.map(task => ({
+        id: task.id,
         title: task.title,
         start: task.start,
         end: task.end,
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
       calendar.removeAllEvents();
       tasks.forEach(task => {
         calendar.addEvent({
+          id: task.id,
           title: task.title,
           start: task.start,
           end: task.end,
@@ -91,11 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Function to render tasks in the task list
   function renderTasks() {
     taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
+    tasks.forEach((task) => {
       const li = document.createElement('li');
+
       li.innerHTML = `
-        <span>${task.title} - ${formatEventTime(task)}</span>
-        <button data-index="${index}">Delete</button>
+        <div class="task-info">
+          <span class="task-title">${task.title}</span>
+          <span class="task-time">${formatEventTime(task)}</span>
+        </div>
+        <div class="task-actions">
+          <button class="edit-btn" data-id="${task.id}" title="Edit Task">
+            <!-- Edit Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM5 16.5V19h2.5l9.387-9.387-2.5-2.5L5 16.5z"/>
+            </svg>
+          </button>
+          <button class="delete-btn" data-id="${task.id}" title="Delete Task">
+            <!-- Delete Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M6 2a2 2 0 00-2 2v1H2v2h1v9a2 2 0 002 2h10a2 2 0 002-2V7h1V5h-2V4a2 2 0 00-2-2H6zm5 14a1 1 0 01-1 1H6a1 1 0 010-2h4a1 1 0 011 1zm3-4H5v7h10v-7z"/>
+            </svg>
+          </button>
+        </div>
       `;
       taskList.appendChild(li);
     });
@@ -131,14 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return date.toLocaleDateString(undefined, options);
   }
 
-  // Function to add a task
+  // Function to add or update a task
   taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const title = taskTitleInput.value.trim();
     const startDate = taskStartDateInput.value;
     const endDate = taskEndDateInput.value;
     const allDay = allDayCheckbox.checked;
-    
+
     // Basic validation
     if (!title || !startDate || !endDate) {
       alert('Please fill in all required fields.');
@@ -179,22 +198,95 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    tasks.push({ title, start, end, allDay });
+    // Check if we're editing an existing task
+    const editingTaskId = taskForm.getAttribute('data-editing-id');
+    if (editingTaskId) {
+      // Locate the task by ID
+      const taskIndex = tasks.findIndex(task => task.id === editingTaskId);
+      if (taskIndex !== -1) {
+        // Update the task details
+        tasks[taskIndex] = {
+          id: editingTaskId, // Retain the same ID
+          title,
+          start,
+          end,
+          allDay
+        };
+        // Remove the editing state
+        taskForm.removeAttribute('data-editing-id');
+      }
+    } else {
+      // Create a unique ID for the new task
+      const taskId = Date.now().toString();
+      tasks.push({ id: taskId, title, start, end, allDay });
+    }
+
+    // Save to LocalStorage
     localStorage.setItem('tasks', JSON.stringify(tasks));
+
+    // Reset the form
     taskForm.reset();
     toggleTimeInputs();
+
+    // Render tasks and update the calendar
     renderTasks();
-    calendar.gotoDate(startDate); // Navigate to the start date of the added task
+    if (!editingTaskId) {
+      calendar.gotoDate(startDate); // Navigate to the start date of the added task
+    }
   });
 
-  // Function to delete a task
+  // Function to handle task actions (delete/edit)
   taskList.addEventListener('click', (e) => {
-    if (e.target.tagName === 'BUTTON') {
-      const index = e.target.getAttribute('data-index');
-      if (index !== null) {
-        tasks.splice(index, 1);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        renderTasks();
+    // Handle Delete Button
+    if (e.target.closest('.delete-btn')) {
+      const btn = e.target.closest('.delete-btn');
+      const taskId = btn.getAttribute('data-id');
+      if (taskId) {
+        if (confirm('Are you sure you want to delete this task?')) {
+          // Remove the task by filtering out the matching ID
+          tasks = tasks.filter(task => task.id !== taskId);
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+          renderTasks();
+        }
+      }
+    }
+
+    // Handle Edit Button
+    if (e.target.closest('.edit-btn')) {
+      const btn = e.target.closest('.edit-btn');
+      const taskId = btn.getAttribute('data-id');
+      if (taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          // Populate the form with task details for editing
+          taskTitleInput.value = task.title;
+
+          const startDate = task.start.split('T')[0];
+          const endDate = task.allDay ? task.end : task.end.split('T')[0];
+          taskStartDateInput.value = startDate;
+          taskEndDateInput.value = endDate;
+
+          if (task.allDay) {
+            allDayCheckbox.checked = true;
+            toggleTimeInputs();
+          } else {
+            allDayCheckbox.checked = false;
+            toggleTimeInputs();
+            const startTime = task.start.split('T')[1].substring(0,5);
+            const endTime = task.end.split('T')[1].substring(0,5);
+            taskStartTimeInput.value = startTime;
+            taskEndTimeInput.value = endTime;
+          }
+
+          // Set the editing state with the task ID
+          taskForm.setAttribute('data-editing-id', taskId);
+          
+          // Optionally, scroll to the form for better user experience
+          window.scrollTo({
+            top: taskForm.offsetTop,
+            behavior: 'smooth'
+          });
+        }
       }
     }
   });
